@@ -35,5 +35,32 @@ describe "User pages" do
 	  expect { click_button submit }.to change(User, :count).by(1)
 	end
     end
+
+    describe "after saving the user" do
+        before { click_button submit }
+        let(:user) { User.find_by(email: 'dummy@yahoo.com') }
+
+        it { should have_link('Sign out') }
+        it { should have_title(user.name) }
+        it { should have_selector('div.alert.alert-success', text: 'Welcome') }
+    end
   end
+
+  describe "edit" do
+    let(:user) { FactoryGirl.create(:user) }
+    before { visit edit_user_path(user) }
+
+    describe "page" do
+      it { should have_content("Update your profile") }
+      it { should have_title("Edit user") }
+      it { should have_link('change', href: 'http://gravatar.com/emails') }
+    end
+
+    describe "with invalid information" do
+      before { click_button "Save changes" }
+
+      it { should have_content('error') }
+    end
+  end # describe "edit" do
+
 end
